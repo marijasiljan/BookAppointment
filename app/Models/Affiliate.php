@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Affiliate extends Model
 {
+    protected $table = 'affiliate';
 
     public function users(): HasMany
     {
