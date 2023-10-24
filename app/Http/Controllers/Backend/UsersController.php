@@ -5,7 +5,7 @@ use App\Http\Controllers\BaseController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Validator;
 
 class UsersController extends BaseController {
 
@@ -33,8 +33,12 @@ class UsersController extends BaseController {
         if ($validator->fails()) {
             return $this->ResponseError(0,'Invalid data.', 404);
         }
+        if($request->input('id')){
+            $user = User::find($request->input('id'));
+        }else{
+            $user = new User();
+        }
 
-        $user = new User();
         $user->name = $request->input('name');
         $user->surname = $request->input('surname');
         $user->email = $request->input('email');
