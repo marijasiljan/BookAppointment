@@ -10,7 +10,7 @@ class BookingTimeController extends BaseController {
 
     public function index(){
 
-        $bookingTimes = BookingTime::all();
+        $bookingTimes = BookingTime::whereStatus(1)->get();
 
         return $this->ResponseSuccess($bookingTimes);
     }
@@ -26,8 +26,12 @@ class BookingTimeController extends BaseController {
         if ($validator->fails()) {
             return $this->ResponseError(0,'Invalid data.', 404);
         }
+        if($request->input('id')){
+            $bookingTime = BookingTime::find($request->input('id'));
+        }else{
+            $bookingTime = new BookingTime;
+        }
 
-        $bookingTime = new BookingTime;
         $bookingTime->start_time = $request->input('start_time');
         $bookingTime->end_time = $request->input('end_time');
         $bookingTime->status = $request->input('status');
@@ -35,6 +39,15 @@ class BookingTimeController extends BaseController {
         $bookingTime->save();
 
         return $this->ResponseSuccess($bookingTime, '', 'Booking Time Slot created successfully');
+    }
+
+    public function destroy($id)
+    {
+        $bookingTime = BookingTime::findOrFail($id);
+        $bookingTime->status = -1;
+        $bookingTime->save();
+
+        return $this->ResponseSuccess($bookingTime, '', 'User deleted successfully!');
     }
 
 }

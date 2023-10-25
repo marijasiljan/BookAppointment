@@ -10,7 +10,7 @@ class ServiceController extends BaseController {
 
     public function index(){
 
-        $services = Service::all();
+        $services = Service::whereStatus(1)->get();
 
         return $this->ResponseSuccess($services);
     }
@@ -27,8 +27,15 @@ class ServiceController extends BaseController {
         if ($validator->fails()) {
             return $this->ResponseError(0,'Invalid data.', 404);
         }
+        if($request->input('id')){
+            $service = Service::find($request->input('id'));
+        }
+        else
+        {
+            $service = new Service();
 
-        $service = new Service();
+        }
+
         $service->name = $request->input('name');
         $service->category = $request->input('category');
         $service->price_id = $request->input('price_id');
@@ -39,4 +46,12 @@ class ServiceController extends BaseController {
         return $this->ResponseSuccess($service, '', 'Service added successfully!');
     }
 
+    public function destroy($id)
+    {
+        $service = Service::findOrFail($id);
+        $service->status = -1;
+        $service->save();
+
+        return $this->ResponseSuccess($service, '', 'Service deleted successfully!');
+    }
 }

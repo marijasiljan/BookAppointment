@@ -10,9 +10,9 @@ use Validator;
 class UsersController extends BaseController {
 
 
-    public function index($id = 0){
+    public function index(){
 
-        $users = User::all();
+        $users = User::whereStatus(1)->get();
 
         return $this->ResponseSuccess($users);
     }
@@ -33,6 +33,7 @@ class UsersController extends BaseController {
         if ($validator->fails()) {
             return $this->ResponseError(0,'Invalid data.', 404);
         }
+
         if($request->input('id')){
             $user = User::find($request->input('id'));
         }else{
@@ -52,4 +53,12 @@ class UsersController extends BaseController {
         return $this->ResponseSuccess($user, '', 'User created successfully!');
     }
 
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = -1;
+        $user->save();
+
+        return $this->ResponseSuccess($user, '', 'User deleted successfully!');
+    }
 }

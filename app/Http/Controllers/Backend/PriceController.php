@@ -10,7 +10,7 @@ class PriceController extends BaseController {
 
     public function index(){
 
-        $prices = Price::all();
+        $prices = Price::whereStatus(1)->get();
 
         return $this->ResponseSuccess($prices);
     }
@@ -26,8 +26,12 @@ class PriceController extends BaseController {
         if ($validator->fails()) {
             return $this->ResponseError(0,'Invalid data.', 404);
         }
+        if($request->input('id')){
+            $price = Price::find($request->input('id'));
+        }else{
+            $price = new Price();
+        }
 
-        $price = new Price();
         $price->service_id = $request->input('service_id');
         $price->value = $request->input('value');
         $price->status = $request->input('status');
@@ -37,4 +41,12 @@ class PriceController extends BaseController {
         return $this->ResponseSuccess($price, '', 'Price added successfully!');
     }
 
+    public function destroy($id)
+    {
+        $price = Price::findOrFail($id);
+        $price->status = -1;
+        $price->save();
+
+        return $this->ResponseSuccess($price, '', 'User deleted successfully!');
+    }
 }

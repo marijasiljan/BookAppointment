@@ -11,7 +11,7 @@ class AffiliateController extends BaseController {
 
     public function index(){
 
-        $affiliates = Affiliate::all();
+        $affiliates = Affiliate::whereStatus(1)->get();
 
         return $this->ResponseSuccess($affiliates);
     }
@@ -29,8 +29,12 @@ class AffiliateController extends BaseController {
         if ($validator->fails()) {
             return $this->ResponseError(0,'Invalid data.', 404);
         }
+        if($request->input('id')){
+            $affiliate = Affiliate::find($request->input('id'));
+        }else{
+            $affiliate = new Affiliate();
+        }
 
-        $affiliate = new Affiliate();
         $affiliate->email = $request->input('email');
         $affiliate->address = $request->input('address');
         $affiliate->city = $request->input('city');
@@ -40,6 +44,15 @@ class AffiliateController extends BaseController {
         $affiliate->save();
 
         return $this->ResponseSuccess($affiliate, '', 'Affiliate added successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $affiliate = Affiliate::findOrFail($id);
+        $affiliate->status = -1;
+        $affiliate->save();
+
+        return $this->ResponseSuccess($affiliate, '', 'User deleted successfully!');
     }
 
 }

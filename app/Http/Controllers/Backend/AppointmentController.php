@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 class AppointmentController extends BaseController {
     public function index(){
 
-        $appointments = Appointment::all();
+        $appointments = Appointment::whereStatus(1)->get();
 
         return $this->ResponseSuccess($appointments);
     }
@@ -29,8 +29,12 @@ class AppointmentController extends BaseController {
         if ($validator->fails()) {
             return $this->ResponseError(0,'Invalid data.', 404);
         }
+        if($request->input('id')){
+            $appointment = Appointment::find($request->input('id'));
+        }else{
+            $appointment = new Appointment();
+        }
 
-        $appointment = new Appointment();
         $appointment->booking_time_id = $request->input('booking_time_id');
         $appointment->client_id = $request->input('client_id');
         $appointment->employee_id = $request->input('employee_id');
@@ -41,5 +45,14 @@ class AppointmentController extends BaseController {
         $appointment->save();
 
         return $this->ResponseSuccess($appointment, '', 'Appointment created successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->status = -1;
+        $appointment->save();
+
+        return $this->ResponseSuccess($appointment, '', 'User deleted successfully!');
     }
 }

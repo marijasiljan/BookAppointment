@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\PasswordResetEvent;
 use App\Events\UserRegistered;
+use App\Listeners\SendPasswordResetEmailListener;
 use App\Listeners\SendWelcomeEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         UserRegistered::class => [
             SendWelcomeEmail::class,
         ],
+        PasswordResetEvent::class => [
+            SendPasswordResetEmailListener::class,
+        ]
     ];
 
     /**
